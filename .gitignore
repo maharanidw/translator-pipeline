@@ -1,0 +1,18 @@
+# Environment variables
+.env
+
+# Logs
+translator.log
+*.log
+
+# Build output
+bin/
+*.exe
+
+# Go workspace
+go.work
+go.work.sum
+
+# OS generated files
+.DS_Store
+Thumbs.db
