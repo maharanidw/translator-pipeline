@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translator Pipeline</title>
+  <style>
+    body {
+      width: 250px;
+      padding: 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      text-align: center;
+    }
+    h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 13px;
+      color: #555;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h3>Translator Pipeline</h3>
+  
+  <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+    <select id="sourceLang" style="width: 50%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 12px;">
+      <option value="Auto Detect">Auto Detect</option>
+      <option value="Korean">Korean</option>
+      <option value="Mandarin">Mandarin</option>
+      <option value="Japanese">Japanese</option>
+    </select>
+    <span style="padding-top: 8px; font-weight: bold;">➡️</span>
+    <select id="targetLang" style="width: 50%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-size: 12px;">
+      <option value="Indonesian">Indonesian</option>
+      <option value="English">English</option>
+    </select>
+  </div>
+
+  <select id="aiModel" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ccc;">
+    <option value="gemini-3.1-flash-lite-preview">Gemini 3.1 Flash Lite (Paling Stabil 500 RPD / 15 RPM)</option>
+    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Sangat Terbatas 20 RPD / 5 RPM)</option>
+  </select>
+
+  <button id="extractBtn">1. Ekstraksi Teks</button>
+  
+  <div id="resumeSection" style="display: none; margin-top: 15px; text-align: center; background: #fffbeb; padding: 12px; border-radius: 6px; border: 1px solid #fcd34d;">
+    <p style="margin: 0; font-size: 12px; color: #92400e; font-weight: bold; margin-bottom: 8px;">⚠️ Terjemahan Tertunda Ditemukan!</p>
+    <p style="margin: 0; font-size: 11px; color: #b45309; margin-bottom: 10px;" id="resumeInfo">Batas kuota/koneksi terputus di tengah jalan.</p>
+    <button id="resumeBtn" style="background: #f59e0b; width: 100%;">🚀 Lanjutkan Terjemahan</button>
+  </div>
+
+  <div id="previewSection" style="display: none; margin-top: 15px; text-align: left; background: #f3f4f6; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">
+    <p style="margin: 0; font-size: 13px; color: #374151; line-height: 1.5;" id="previewText">
+      Menghitung estimasi...
+    </p>
+
+    <!-- Pengelompokan Bab -->
+    <div style="margin-top: 10px; padding: 8px; background: #e0e7ff; border-radius: 6px; border: 1px solid #bfdbfe;">
+      <label style="font-size: 11px; font-weight: bold; color: #1e3a8a;">📂 Gabungkan Chapter Ke:</label>
+      <select id="novelSelect" style="width: 100%; padding: 6px; margin-top: 4px; border-radius: 4px; border: 1px solid #9ca3af; font-size: 11px;">
+        <option value="0">✨ Buat Novel Baru</option>
+      </select>
+      
+      <input type="text" id="novelOverrideTitle" placeholder="Judul Novel Baru (Harus diisi)" style="width: 100%; padding: 6px; margin-top: 6px; border-radius: 4px; border: 1px solid #9ca3af; font-size: 11px; box-sizing: border-box;" />
+      <input type="text" id="chapterOverrideTitle" placeholder="Judul Chapter Khusus (Opsional)" style="width: 100%; padding: 6px; margin-top: 6px; border-radius: 4px; border: 1px solid #9ca3af; font-size: 11px; box-sizing: border-box;" />
+    </div>
+
+    <!-- Kotak Preview Teks -->
+    <div style="margin-top: 10px;">
+      <label style="font-size: 11px; font-weight: bold; color: #4b5563;">Cek & Bersihkan Teks (Hapus Iklan/Menu):</label>
+      <textarea id="extractedTextPreview" style="width: 100%; height: 120px; margin-top: 4px; font-size: 11px; padding: 6px; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 4px; resize: vertical; font-family: monospace;"></textarea>
+    </div>
+
+    <button id="translateBtn" style="margin-top: 12px; background: #10b981; width: 100%;">2. Mulai Terjemahkan</button>
+  </div>
+
+  <div id="status">Siap digunakan.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

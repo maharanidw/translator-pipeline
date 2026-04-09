@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Baca - Translator Pipeline</title>
+    <style>
+        /* Desain E-INK Friendly (High Contrast, Tidak Terlalu Banyak Warna) */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --border-color: #999999;
+            --link-color: #0000ee;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 10px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* List Gaya E-INK */
+        .list-item {
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .list-item:hover, .list-item:active {
+            background-color: #f0f0f0;
+        }
+
+        .delete-btn {
+            background-color: #fff;
+            color: #d90429;
+            border: 1px solid #d90429;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .delete-btn:hover {
+            background-color: #fee2e2;
+        }
+
+        /* Reading View */
+        #reading-view {
+            display: none;
+            font-size: 22px; /* Ukuran font lebih besar untuk Boox */
+            text-align: justify;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border: 2px solid var(--border-color);
+            background: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .badge {
+            font-size: 12px;
+            border: 1px solid #000;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* Status Label */
+        .status-sync { border-color: green; color: green; }
+        .status-pending { border-color: #3b82f6; color: #3b82f6; }
+        .status-partial { border-color: orange; color: orange; border-style: dashed; }
+
+        /* Loader */
+        .loader {
+            text-align: center;
+            font-style: italic;
+            padding: 40px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- Navigation Menu -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="back-btn" style="flex: 1; margin: 0;" onclick="showNovels()">📚 Koleksi Bacaan</button>
+            <button class="back-btn" style="flex: 1; margin: 0;" onclick="showSystemLogs()">⚙️ Live Status (Logs)</button>
+        </div>
+
+        <!-- Tampilan Daftar Novel -->
+        <div id="view-novels">
+            <h1>Library</h1>
+            <div id="novels-list" class="container"></div>
+        </div>
+
+        <!-- Tampilan Daftar Bab (Chapters) -->
+        <div id="view-chapters" style="display: none;">
+            <button class="back-btn" onclick="showNovels()">← Kembali ke Library</button>
+            <h1 id="novel-title-header">Chapters</h1>
+            <div id="chapters-list" class="container"></div>
+        </div>
+
+        <!-- Tampilan Membaca (Reading Mode) -->
+        <div id="view-reading" style="display: none;">
+            <button class="back-btn" id="btn-back-chapter">← Kembali ke Chapters</button>
+            <h1 id="reading-title"></h1>
+            <p style="text-align:center; font-size:14px; margin-bottom: 30px;">
+                Diterjemahkan via: <strong id="reading-model"></strong>
+            </p>
+            <div id="reading-content" style="white-space: pre-wrap; font-size: 24px; line-height: 1.8;"></div>
+        </div>
+        
+        <!-- Tampilan Live Logs -->
+        <div id="view-logs" style="display: none;">
+            <h2>⚙️ System Logs / Live Monitor</h2>
+            <p style="font-size: 14px; text-align: center; color: #555;">Memantau kinerja Background AI secara real-time. Menampilkan log aktivitas terakhir.</p>
+            
+            <div style="text-align: right; margin-bottom: 10px;">
+                <button class="delete-btn" onclick="clearLogs()">&nbsp;Sapu/Bersihkan Logs 🧹&nbsp;</button>
+            </div>
+            
+            <pre id="log-container" style="background-color: #1e1e1e; color: #a3e635; padding: 15px; border-radius: 6px; overflow-y: auto; height: 60vh; font-size: 14px; font-family: monospace; white-space: pre-wrap; line-height: 1.4; border: 2px solid #555;"></pre>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

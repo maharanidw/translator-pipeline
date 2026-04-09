@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Translator Pipeline Extractor",
+  "version": "1.0",
+  "description": "Bypass proteksi script situs web untuk mengekstrak dan mengirim teks ke server Translator Pipeline lokal.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
