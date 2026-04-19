@@ -460,3 +460,6 @@
 2026/04/19 11:47:02 extract_handler.go:141:    [DB Sync] Progress sinkronisasi ke-21/21 berhasil disimpan ke DB...
 2026/04/19 11:47:03 extract_handler.go:167: --> ✅ [Background Task] SELESAI Penuh! Hasil terjemahan disimpan (ID: 29)
 2026/04/19 11:47:03 extract_handler.go:168: --> 📊 [Penggunaan Kuota gemini-3.1-flash-lite-preview Hari Ini] Total Request: 72 | Total Token: 150198
+2026/04/19 12:01:40 db.go:79: Auto migrating Database...
+2026/04/19 12:01:43 db.go:91: Migrate SUCCESS || Database Connected
+2026/04/19 12:01:43 main.go:46: SERVER READY || Listening on port http://localhost:8888

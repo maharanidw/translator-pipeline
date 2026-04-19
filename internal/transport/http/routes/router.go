@@ -52,6 +52,7 @@ func SetupRouter() *gin.Engine {
 		// Dashboard web handler
 		api.GET("/novels", handlers.GetNovels)
 		api.DELETE("/novels/:id", handlers.DeleteNovel) // <-- Tambahan route DELETE
+		api.GET("/novels/:id/export", handlers.ExportNovel) // <-- Export PDF Mode
 		api.GET("/novels/:id/chapters", handlers.GetChaptersByNovelID)
 		api.GET("/chapters/:id", handlers.GetChapterByID)
 		api.GET("/status", handlers.GetChapterStatusByURL)

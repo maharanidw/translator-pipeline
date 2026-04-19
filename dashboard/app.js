@@ -107,7 +107,10 @@ async function fetchNovels() {
                             <a href="${novel.SourceURL}" target="_blank" style="color:var(--text-color);">${novel.SourceURL}</a>
                         </div>
                     </div>
-                    <button class="delete-btn" onclick="deleteNovel(event, ${novel.ID}, '${novel.Title.replace(/'/g, "\\'")}')">Hapus 🗑️</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="back-btn" style="padding: 5px 10px; margin:0;" onclick="exportPDF(event, ${novel.ID})">Cetak PDF 📄</button>
+                        <button class="delete-btn" onclick="deleteNovel(event, ${novel.ID}, '${novel.Title.replace(/'/g, "\\'")}')">Hapus 🗑️</button>
+                    </div>
                 </div>
             `;
             item.onclick = (e) => {
@@ -122,6 +125,15 @@ async function fetchNovels() {
     } catch (e) {
         list.innerHTML = `<div class="loader" style="color:red;">Error: Gagal memuat data dari server!</div>`;
     }
+}
+
+// Buka Halaman Khusus Generate Document PDF / Cetak HTML
+function exportPDF(event, novelId) {
+    if (event) {
+        event.stopPropagation();
+    }
+    // Langsung buka link backend yang akan men-generate pure HTML Document siap Print
+    window.open(`${API_BASE}/novels/${novelId}/export`, '_blank');
 }
 
 // Menghapus Data Novel + Chapters terkait (Fitur "Sisa Testing")
