@@ -51,7 +51,7 @@ func SetupRouter() *gin.Engine {
 
 		// Dashboard web handler
 		api.GET("/novels", handlers.GetNovels)
-		api.DELETE("/novels/:id", handlers.DeleteNovel) // <-- Tambahan route DELETE
+		api.DELETE("/novels/:id", handlers.DeleteNovel)     // <-- Tambahan route DELETE
 		api.GET("/novels/:id/export", handlers.ExportNovel) // <-- Export PDF Mode
 		api.GET("/novels/:id/chapters", handlers.GetChaptersByNovelID)
 		api.GET("/chapters/:id", handlers.GetChapterByID)
@@ -64,6 +64,14 @@ func SetupRouter() *gin.Engine {
 
 	// Membuka akses untuk melayani file Web Dashboard (Frontend)
 	r.Static("/dashboard", "./dashboard")
+
+	// Membuka akses statis untuk file-file landing page
+	r.Static("/public", "./public")
+
+	// Rute Root untuk langsung menampilkan Landing Page (index.html)
+	r.GET("/", func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
 
 	return r
 }

@@ -124,11 +124,11 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 
 		var minDelay time.Duration
 		if strings.Contains(modelName, "3.1-flash-lite") {
-			minDelay = 25 * time.Second // Paid Tier membolehkan hingga 360 RPM
+			minDelay = 25 * time.Second // Aman untuk Free Tier (~2-3 RPM)
 		} else if strings.Contains(modelName, "2.5-flash") && !strings.Contains(modelName, "lite") {
-			minDelay = 50 * time.Second // Paid Tier membolehkan hingga 360 RPM
+			minDelay = 50 * time.Second // Aman untuk Free Tier (15 RPM)
 		} else if strings.Contains(modelName, "pro") {
-			minDelay = 60 * time.Second // Lebih mahal/lambat dibanding flash, aman di 2s
+			minDelay = 60 * time.Second // Aman untuk Free Tier (Sangat terbatas)
 		} else {
 			minDelay = 25 * time.Second
 		}
