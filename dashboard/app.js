@@ -1,4 +1,4 @@
-const API_BASE = "https://exctracta-47dzy.ondigitalocean.app/api/v1";
+const API_BASE = "/api/v1";
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchNovels();
