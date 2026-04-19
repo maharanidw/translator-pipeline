@@ -124,11 +124,11 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 		
 		var minDelay time.Duration
 		if strings.Contains(modelName, "3.1-flash-lite") {
-			minDelay = 11 * time.Second // Aman untuk ~5-6 RPM
+			minDelay = 25 * time.Second // Aman untuk ~2
 		} else if strings.Contains(modelName, "2.5-flash") && !strings.Contains(modelName, "lite") {
-			minDelay = 25 * time.Second // Aman batas Free Tier
+			minDelay = 50 * time.Second // Aman batas Free Tier
 		} else if strings.Contains(modelName, "pro") {
-			minDelay = 45 * time.Second // Sangat mahal limitnya
+			minDelay = 60 * time.Second // Sangat mahal limitnya
 		} else {
 			minDelay = 12 * time.Second
 		}
