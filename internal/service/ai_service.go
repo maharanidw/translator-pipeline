@@ -102,7 +102,7 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 		},
 	}
 
-	chunks := ChunkText(text, 4500) // Pecah teks tiap ~4500 karakter
+	chunks := ChunkText(text, 9000) // ✨ OPTIMASI: Diperbesar dari 4500 menjadi 9000 karakter untuk memangkas jumlah request (RPM) hingga 50%
 	var translated strings.Builder
 	translated.WriteString(previousTranslation)
 	if previousTranslation != "" {
@@ -121,16 +121,16 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 		// Memaksa seluruh terjemahan yang berjalan bersamaan (concurrent) untuk patuh pada 1 antrean
 		globalAIMutex.Lock()
 		elapsed := time.Since(lastAPIcall)
-		
+
 		var minDelay time.Duration
 		if strings.Contains(modelName, "3.1-flash-lite") {
-			minDelay = 25 * time.Second // Aman untuk ~2
+			minDelay = 25 * time.Second // Paid Tier membolehkan hingga 360 RPM
 		} else if strings.Contains(modelName, "2.5-flash") && !strings.Contains(modelName, "lite") {
-			minDelay = 50 * time.Second // Aman batas Free Tier
+			minDelay = 50 * time.Second // Paid Tier membolehkan hingga 360 RPM
 		} else if strings.Contains(modelName, "pro") {
-			minDelay = 60 * time.Second // Sangat mahal limitnya
+			minDelay = 60 * time.Second // Lebih mahal/lambat dibanding flash, aman di 2s
 		} else {
-			minDelay = 12 * time.Second
+			minDelay = 25 * time.Second
 		}
 
 		if elapsed < minDelay {
@@ -138,7 +138,7 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 			log.Printf("⏳ [Rate Limit Antrean] Menunda API Request selama %v detik (Model: %s)...\n", waitDur.Round(time.Second), modelName)
 			time.Sleep(waitDur)
 		}
-		
+
 		// Update timer terakhir ketika API benar-benar dipanggil
 		lastAPIcall = time.Now()
 		globalAIMutex.Unlock()
