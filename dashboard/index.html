@@ -11,8 +11,14 @@
             --text-color: #000000;
             --border-color: #999999;
             --link-color: #0000ee;
+        }        
+        /* Dark Mode Theme */
+        body.theme-dark {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --border-color: #444444;
+            --link-color: #8ab4f8;
         }
-
         body {
             font-family: 'Georgia', serif;
             background-color: var(--bg-color);
@@ -53,7 +59,7 @@
         }
 
         .delete-btn {
-            background-color: #fff;
+            background-color: transparent;
             color: #d90429;
             border: 1px solid #d90429;
             padding: 5px 10px;
@@ -70,8 +76,26 @@
         /* Reading View */
         #reading-view {
             display: none;
-            font-size: 22px; /* Ukuran font lebih besar untuk Boox */
             text-align: justify;
+        }
+        
+        /* Reading Device Modes */
+        .reading-ereader {
+            font-size: 24px;
+            line-height: 1.8;
+            max-width: 100%;
+        }
+        .reading-desktop {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 0 auto;
+            max-width: 750px;
+        }
+        .reading-phone {
+            font-size: 15px;
+            line-height: 1.5;
+            max-width: 100%;
+            padding: 0 5px;
         }
 
         .back-btn {
@@ -79,7 +103,8 @@
             margin-bottom: 20px;
             padding: 10px 20px;
             border: 2px solid var(--border-color);
-            background: #fff;
+            background: transparent;
+            color: var(--text-color);
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
@@ -132,14 +157,28 @@
 
         <!-- Tampilan Membaca (Reading Mode) -->
         <div id="view-reading" style="display: none;">
-            <button class="back-btn" id="btn-back-chapter">← Kembali ke Chapters</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px;">
+                <button class="back-btn" id="btn-back-chapter" style="margin: 0;">← Kembali</button>
+                <div style="display: flex; gap: 8px;">
+                    <!-- Dropdown Tema -->
+                    <select id="theme-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);" onchange="changeTheme(this.value)">
+                        <option value="light">☀️ Terang</option>
+                        <option value="dark">🌙 Gelap</option>
+                    </select>
+                    <!-- Dropdown Device Size -->
+                    <select id="device-select" style="padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-color);" onchange="changeDeviceMode(this.value)">
+                        <option value="ereader">📖 E-Reader</option>
+                        <option value="desktop">💻 Desktop</option>
+                        <option value="phone">📱 Phone</option>
+                    </select>
+                </div>
+            </div>
+
             <h1 id="reading-title"></h1>
-            <p style="text-align:center; font-size:14px; margin-bottom: 30px;">
+            <p style="text-align:center; font-size:14px; margin-bottom: 30px;"> 
                 Diterjemahkan via: <strong id="reading-model"></strong>
             </p>
-            <div id="reading-content" style="white-space: pre-wrap; font-size: 24px; line-height: 1.8;"></div>
-        </div>
-        
+            <div id="reading-content" style="white-space: pre-wrap;" class="reading-ereader"></div>
         <!-- Tampilan Live Logs -->
         <div id="view-logs" style="display: none;">
             <h2>⚙️ System Logs / Live Monitor</h2>
@@ -153,6 +192,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>

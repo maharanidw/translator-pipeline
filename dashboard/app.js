@@ -1,8 +1,43 @@
 const API_BASE = "/api/v1";
 
 document.addEventListener("DOMContentLoaded", () => {
+    loadPreferences();
     fetchNovels();
 });
+
+// Load Setelan Tema & Device Mode dari localStorage
+function loadPreferences() {
+    const theme = localStorage.getItem("theme-prefs") || "light";
+    const device = localStorage.getItem("device-prefs") || "ereader";
+    
+    changeTheme(theme);
+    changeDeviceMode(device);
+
+    const themeSelect = document.getElementById("theme-select");
+    const deviceSelect = document.getElementById("device-select");
+    
+    if (themeSelect) themeSelect.value = theme;
+    if (deviceSelect) deviceSelect.value = device;
+}
+
+function changeTheme(themeValue) {
+    if (themeValue === "dark") {
+        document.body.classList.add("theme-dark");
+    } else {
+        document.body.classList.remove("theme-dark");
+    }
+    localStorage.setItem("theme-prefs", themeValue);
+}
+
+function changeDeviceMode(deviceValue) {
+    const readingContent = document.getElementById("reading-content");
+    if (!readingContent) return;
+
+    readingContent.className = ""; // Bersihkan semua kelas
+    readingContent.classList.add("reading-" + deviceValue);
+
+    localStorage.setItem("device-prefs", deviceValue);
+}
 
 // View Manager
 function showView(viewId) {
