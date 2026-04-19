@@ -46,13 +46,13 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
     
     // Auto-check jika sudah ada di database sebelum extract (Untuk fitur RESUME)
     try {
-        const checkRes = await fetch("http://localhost:8888/api/v1/status?url=" + encodeURIComponent(tab.url));
+        const checkRes = await fetch("https://exctracta-47dzy.ondigitalocean.app/api/v1/status?url=" + encodeURIComponent(tab.url));
         const checkData = await checkRes.json();
         
         if (checkData.success && checkData.data) {
             const { CurrentChunk, TotalChunks, IsSynced } = checkData.data;
             if (IsSynced) {
-                statusText.innerHTML = "✅ <b>Selesai 100%.</b> Cek <a href='http://localhost:8888/dashboard' target='_blank'>Dashboard</a>";
+                statusText.innerHTML = "✅ <b>Selesai 100%.</b> Cek <a href='https://exctracta-47dzy.ondigitalocean.app/dashboard' target='_blank'>Dashboard</a>";
                 return; // Berhenti karena sudah tamat
             } else if (TotalChunks > 0 && CurrentChunk > 0) {
                 const percent = Math.round((CurrentChunk / TotalChunks) * 100);
@@ -81,7 +81,7 @@ async function startExtractionAndSendBackend(tab) {
     const statusText = document.getElementById('status');
     // Tarik daftar List Novel dari database agar user bisa pilih gabung ke mana
     try {
-        const novelsRes = await fetch("http://localhost:8888/api/v1/novels");
+        const novelsRes = await fetch("https://exctracta-47dzy.ondigitalocean.app/api/v1/novels");
         const novelsData = await novelsRes.json();
         if (novelsData.success && novelsData.data) {
             const selectEl = document.getElementById('novelSelect');
@@ -173,7 +173,7 @@ document.getElementById('translateBtn').addEventListener('click', () => {
     document.getElementById('translateBtn').disabled = true;
     document.getElementById('translateBtn').innerText = "Mengontak Backend...";
 
-    fetch("http://localhost:8888/api/v1/extract", { 
+    fetch("https://exctracta-47dzy.ondigitalocean.app/api/v1/extract", { 
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -196,7 +196,7 @@ document.getElementById('translateBtn').addEventListener('click', () => {
             // Lakukan Polling Status Terjemahan di Popup!
             const pollInterval = setInterval(async () => {
                 try {
-                    const statusRes = await fetch("http://localhost:8888/api/v1/status?url=" + encodeURIComponent(extractedData.url));
+                    const statusRes = await fetch("https://exctracta-47dzy.ondigitalocean.app/api/v1/status?url=" + encodeURIComponent(extractedData.url));
                     const statusData = await statusRes.json();
                     
                     if (statusData.success && statusData.data) {
