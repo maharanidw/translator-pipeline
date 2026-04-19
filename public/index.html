@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Translator Pipeline | Extracta</title>
+    <title>Extracta</title>
     <style>
-        /* Modern CSS Reset & Variables */
+        /* Modern CSS Reset & Variables - Teal/Ocean Palette */
         :root {
-            --bg-base: #0B0F19;
-            --bg-surface: #111827;
-            --bg-surface-hover: #1F2937;
-            --primary: #6366f1; /* Indigo */
-            --primary-hover: #4f46e5;
-            --text-main: #f9fafb;
-            --text-muted: #9ca3af;
-            --border-color: #374151;
+            --bg-base: #EBF4F6; /* Biru es sangat terang untuk background utama */
+            --bg-surface: #ffffff; /* Putih untuk card agar tetap kontras */
+            --bg-surface-hover: #f5fbfc; /* Sedikit kebiruan saat card di-hover */
+            --primary: #088395; /* Teal utama */
+            --primary-hover: #09637E; /* Teal gelap untuk hover */
+            --accent: #7AB2B2; /* Teal terang untuk aksen/border */
+            
+            --text-heading: #09637E; /* Teks judul dengan teal paling gelap */
+            --text-main: #1f2937; /* Teks body abu-abu gelap agar nyaman dibaca */
+            --text-muted: #5a767a; /* Teks sekunder dengan nuansa teal pudar */
+            --border-color: #c4dada; /* Border abu-abu kebiruan */
         }
 
         * {
@@ -38,7 +41,7 @@
             align-items: center;
             padding: 20px 5%;
             border-bottom: 1px solid var(--border-color);
-            background-color: rgba(11, 15, 25, 0.8);
+            background-color: rgba(235, 244, 246, 0.8);
             backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
@@ -46,9 +49,10 @@
         }
 
         .logo {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.25rem;
             letter-spacing: 0.5px;
+            color: var(--text-heading);
         }
 
         .logo span {
@@ -67,13 +71,13 @@
         .badge {
             display: inline-block;
             padding: 6px 16px;
-            background-color: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+            background-color: rgba(122, 178, 178, 0.15); /* Aksen transparan */
+            color: var(--primary-hover);
             border-radius: 50px;
             font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 24px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid var(--accent);
         }
 
         .title {
@@ -82,6 +86,7 @@
             line-height: 1.15;
             margin-bottom: 24px;
             letter-spacing: -1px;
+            color: var(--text-heading);
         }
 
         .subtitle {
@@ -113,23 +118,25 @@
         .btn-primary {
             background-color: var(--primary);
             color: white;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 14px rgba(8, 131, 149, 0.3);
         }
 
         .btn-primary:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 6px 20px rgba(9, 99, 126, 0.4);
         }
 
         .btn-secondary {
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            color: var(--primary-hover);
+            border: 1px solid var(--accent);
         }
 
         .btn-secondary:hover {
-            background-color: var(--bg-surface-hover);
+            background-color: var(--bg-base);
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         /* Feature Grid */
@@ -148,19 +155,22 @@
             border-radius: 12px;
             padding: 32px 24px;
             text-align: left;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 10px rgba(8, 131, 149, 0.03);
         }
 
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: var(--primary);
+            background-color: var(--bg-surface-hover);
+            box-shadow: 0 10px 25px rgba(8, 131, 149, 0.1);
         }
 
         .icon-wrapper {
             width: 50px;
             height: 50px;
-            background-color: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
+            background-color: rgba(122, 178, 178, 0.2);
+            color: var(--primary-hover);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -171,9 +181,9 @@
 
         .feature-title {
             font-size: 1.1rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 12px;
-            color: var(--text-main);
+            color: var(--text-heading);
         }
 
         .feature-desc {
@@ -212,12 +222,12 @@
 <body>
 
     <nav>
-        <div class="logo">Translator <span>Pipeline</span></div>
+        <div class="logo">Extracta</div>
         <a href="/login.html" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">Sign In</a>
     </nav>
 
     <header class="hero">
-        <div class="badge">Ditenagai oleh Gemini API</div>
+        <div class="badge">✨ Ditenagai oleh Gemini API</div>
         <h1 class="title">Ekstraksi & Terjemahan Novel Web Tanpa Batas</h1>
         <p class="subtitle">Platform pipeline otomatis untuk mengekstrak konten web dari bahasa sumber ke bahasa tujuan Anda dengan kualitas natural dan kecepatan real-time.</p>
         
@@ -244,7 +254,7 @@
             <p class="feature-desc">Proses scrapping dan terjemahan berjalan asinkronus di belakang layar untuk memproses puluhan chapter dalam satu waktu tanpa membebani browser.</p>
         </div>
         <div class="feature-card">
-            <div class="icon-wrapper">📖</div>
+            <div class="icon-wrapper">📄</div>
             <h3 class="feature-title">Reader Mode & PDF Export</h3>
             <p class="feature-desc">Baca langsung melalui antarmuka responsif yang bebas gangguan, atau ekspor batch hasil terjemahan ke format PDF dengan rapi.</p>
         </div>
