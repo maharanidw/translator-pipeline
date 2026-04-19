@@ -54,29 +54,54 @@ func ExtractText(c *gin.Context) {
 			return
 		}
 	} else {
-		// Membuat Novel Baru
-		if err := config.DB.Where("title = ?", payload.NovelTitle).FirstOrCreate(&novel, models.Novel{
-			Title:     payload.NovelTitle,
-			SourceURL: payload.URL, // Menggunakan URL bab pertama sebagai root
-		}).Error; err != nil {
-			log.Printf("❌ Gagal membuat novel: %v\n", err)
+		// Cari Novel Baru dengan mendeteksi if exist walau pernah dihapus (Soft Delete)
+		// Kita cari dari source_url ATAU title untuk menghindari error title ter-distorsi (misal "뻑" jadi "?")
+		if err := config.DB.Unscoped().Where("source_url = ? OR title = ?", payload.URL, payload.NovelTitle).First(&novel).Error; err != nil {
+			// Jika tidak ketemu, barulah kita Insert/Create
+			novel = models.Novel{
+				Title:     payload.NovelTitle,
+				SourceURL: payload.URL, // Menggunakan URL bab sebagai identitas root
+			}
+			if err := config.DB.Create(&novel).Error; err != nil {
+				log.Printf("❌ Gagal membuat novel: %v\n", err)
+			}
+		}
+
+		if novel.ID > 0 && novel.DeletedAt.Valid {
+			log.Println("♻️ Merestore novel yang pernah di-delete sebelumnya!")
+			// Putuskan campur tangan memori GORM dengan update murni SQL
+			config.DB.Exec("UPDATE novels SET deleted_at = NULL WHERE id = ?", novel.ID)
+			// Tarik data bersih (tanpa status deleted_at) dari database untuk diproses ke bawah
+			config.DB.First(&novel, novel.ID)
 		}
 	}
 
 	var chapter models.Chapter
-	if err := config.DB.Where("source_url = ?", payload.URL).FirstOrCreate(&chapter, models.Chapter{
-		NovelID:        novel.ID,
-		Title:          payload.ChapterTitle,
-		SourceURL:      payload.URL,
-		OriginalText:   payload.Text,
-		LanguageSource: payload.SourceLang,
-		IsSynced:       false,
-	}).Error; err != nil {
-		log.Printf("❌ Gagal membuat chapter dengan FirstOrCreate: %v\n", err)
-		// Fallback jika terjadi race condition
-		if err := config.DB.Where("source_url = ?", payload.URL).First(&chapter).Error; err != nil {
-			log.Printf("❌ Gagal mencari chapter tersembunyi: %v\n", err)
+	// Gunakan Unscoped untuk mencari jejak chapter (berdasarkan URL)
+	if err := config.DB.Unscoped().Where("source_url = ?", payload.URL).First(&chapter).Error; err != nil {
+		// Jika tidak ketemu satupun, kita Create!
+		chapter = models.Chapter{
+			NovelID:        novel.ID,
+			Title:          payload.ChapterTitle,
+			SourceURL:      payload.URL,
+			OriginalText:   payload.Text,
+			LanguageSource: payload.SourceLang,
+			IsSynced:       false,
 		}
+		if err := config.DB.Create(&chapter).Error; err != nil {
+			log.Printf("❌ Gagal membuat chapter DB.Create: %v\n", err)
+		}
+	}
+
+	// Jika chapter sebelumnya pernah dihapus (soft delete), kita "hidupkan" kembali (restore)
+	if chapter.ID > 0 && chapter.DeletedAt.Valid {
+		log.Printf("♻️ Merestore chapter yang pernah di-delete sebelumnya (ID: %d)!\n", chapter.ID)
+
+		// Force raw query SQL supaya PostgreSQL mengubahnya langsung di database tanpa gagal
+		config.DB.Exec("UPDATE chapters SET deleted_at = NULL, is_synced = false, current_chunk = 0, translated_text = '' WHERE id = ?", chapter.ID)
+
+		// Isi ulang memori variabel chapter ini dengan data bersih dari database untuk proses AI di bawah
+		config.DB.First(&chapter, chapter.ID)
 	}
 
 	if chapter.ID == 0 {
