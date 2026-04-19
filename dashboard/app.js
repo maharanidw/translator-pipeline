@@ -135,14 +135,14 @@ async function fetchNovels() {
             const item = document.createElement("div");
             item.className = "list-item";
             item.innerHTML = `
-                <div style="display:flex; justify-content: space-between; align-items:flex-start;">
-                    <div>
+                <div style="display:flex; justify-content: space-between; align-items:flex-start; flex-wrap: wrap; gap: 15px;">
+                    <div style="flex: 1 1 200px;">
                         <strong>${novel.Title || 'Judul Tidak Diketahui'}</strong>
-                        <div style="font-size: 14px; margin-top: 5px;">
+                        <div style="font-size: 14px; margin-top: 5px; word-break: break-all;">
                             <a href="${novel.SourceURL}" target="_blank" style="color:var(--text-color);">${novel.SourceURL}</a>
                         </div>
                     </div>
-                    <div style="display:flex; gap:10px;">
+                    <div style="display:flex; gap:10px; flex-wrap: wrap;">
                         <button class="back-btn" style="padding: 5px 10px; margin:0;" onclick="exportPDF(event, ${novel.ID})">Cetak PDF 📄</button>
                         <button class="delete-btn" onclick="deleteNovel(event, ${novel.ID}, '${novel.Title.replace(/'/g, "\\'")}')">Hapus 🗑️</button>
                     </div>
