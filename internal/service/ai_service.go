@@ -6,10 +6,16 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
+)
+
+var (
+	globalAIMutex sync.Mutex
+	lastAPIcall   time.Time
 )
 
 // ChunkText memecah teks panjang menjadi beberapa bagian (batas maxChars)
@@ -111,6 +117,32 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 		chunk := chunks[i]
 		log.Printf("[AI Service] Menerjemahkan chunk %d dari %d...\n", i+1, len(chunks))
 
+		// 🚦 SMART GLOBAL RATE LIMITER (Mencegah Spike API Call dari Background Tasks)
+		// Memaksa seluruh terjemahan yang berjalan bersamaan (concurrent) untuk patuh pada 1 antrean
+		globalAIMutex.Lock()
+		elapsed := time.Since(lastAPIcall)
+		
+		var minDelay time.Duration
+		if strings.Contains(modelName, "3.1-flash-lite") {
+			minDelay = 11 * time.Second // Aman untuk ~5-6 RPM
+		} else if strings.Contains(modelName, "2.5-flash") && !strings.Contains(modelName, "lite") {
+			minDelay = 25 * time.Second // Aman batas Free Tier
+		} else if strings.Contains(modelName, "pro") {
+			minDelay = 45 * time.Second // Sangat mahal limitnya
+		} else {
+			minDelay = 12 * time.Second
+		}
+
+		if elapsed < minDelay {
+			waitDur := minDelay - elapsed
+			log.Printf("⏳ [Rate Limit Antrean] Menunda API Request selama %v detik (Model: %s)...\n", waitDur.Round(time.Second), modelName)
+			time.Sleep(waitDur)
+		}
+		
+		// Update timer terakhir ketika API benar-benar dipanggil
+		lastAPIcall = time.Now()
+		globalAIMutex.Unlock()
+
 		resp, err := model.GenerateContent(ctx, genai.Text(chunk))
 
 		// 🚀 RETRY MECHANISM: Jika terkena Error 429 (Rate Limit Quota)
@@ -185,23 +217,8 @@ func TranslateText(text string, modelName string, sourceLang string, targetLang 
 			onChunkSuccess(strings.TrimSpace(translated.String()), totalTokens, i+1, len(chunks))
 		}
 
-		// SMART RATE LIMITER: Mencegah ban Free Tier
-		// Jika ini bukan chunk terakhir, kita istirahatkan sejenak sistem sebelum request selanjutnya
-		if i < len(chunks)-1 {
-			if strings.Contains(modelName, "3.1-flash-lite") {
-				log.Println("             ⏳ Menunggu 10 detik (Limit 15 RPM untuk Gemini 3.1 Flash Lite - Mode Aman)...")
-				time.Sleep(10 * time.Second)
-			} else if strings.Contains(modelName, "2.5-flash") && !strings.Contains(modelName, "lite") {
-				log.Println("             ⏳ Menunggu 20 detik (Limit 5 RPM untuk Gemini 2.5 Flash - Mode Aman)...")
-				time.Sleep(20 * time.Second)
-			} else if strings.Contains(modelName, "pro") {
-				log.Println("             ⏳ Menunggu 40 detik (Rate Limit Gemini Pro - Mode Aman)...")
-				time.Sleep(40 * time.Second)
-			} else {
-				log.Println("             ⏳ Menunggu 10 detik (Rate Limit Default Gemini - Mode Aman)...")
-				time.Sleep(10 * time.Second)
-			}
-		}
+		// Chunk berhasil dan status terupdate, siap maju ke chunk berikutnya (jika ada).
+		// Note: Rate Limit sudah di-handle di awal iterasi menggunakan Global Mutex (globalAIMutex).
 	}
 
 	return strings.TrimSpace(translated.String()), len(chunks), totalTokens, nil
